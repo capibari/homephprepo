@@ -28,6 +28,19 @@ class UserController extends BaseController
         $this->passValidate = new PassValidate();
     }
 
+    public function actionSignUp()
+    {
+        $this->title =  sprintf('%s | Регистрация', $this->title);
+
+        if($this->request->isPost()){
+            $this->actionCreate();
+        }
+
+        $this->render('sign-up', []);
+    }
+
+
+
     public function actionIndex()
     {
         $mUser = new UserModel(new DBDriver(DBConnector::getPDO()), new Validate());
@@ -41,11 +54,11 @@ class UserController extends BaseController
 
     public function actionCreate()
     {
-        $mUser = new UserModel(new DBDriver(DBConnector::getPDO()), new Validate());
-
         $this->title = sprintf('%s | Добавление нового пользователя', $this->title) ;
 
         if ($this->request->isPost()) {
+
+            $mUser = new UserModel(new DBDriver(DBConnector::getPDO()), new Validate());
 
             $login = $this->request->post('login');
             $password = $this->request->post('password');

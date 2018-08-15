@@ -15,7 +15,6 @@ class PostController extends BaseController
         $mPost = new PostModel(new DBDriver(DBConnector::getPDO()), new Validate());
         $posts = $mPost->getAll();
 
-
         $this->title = sprintf('%s | Список новостей', $this->title) ;
         $this->render('post\index', [
             'articles' => $posts,

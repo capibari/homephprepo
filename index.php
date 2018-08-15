@@ -33,7 +33,7 @@ try{
             $controller->$action();
             $controller->build();
         } else {
-            $error = new ErrorController();
+            $error = new ErrorController($request);
             $error->getError404($action);
             $error->build();
         }

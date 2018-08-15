@@ -4,7 +4,7 @@
         <meta charset="utf-8">
         <title><?=$title?></title>
     </head>
-<!--    <a href>Войти</a><br>-->
+    <a href="/user/sign-up">Регистрация</a><br>
     <a href="/post">Записи</a>
     |:|
     <a href="/user">Пользователи</a>

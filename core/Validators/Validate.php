@@ -42,10 +42,11 @@ class Validate
 
     public function execute(array $fields)
     {
+
         if($this->rules){
             foreach ($this->rules as $name => $rules){
 
-                if (!isset($fields[$name])) { // || $fields[$name] == self::EMPTY_STR && !$this->isRequire($rules) Отключил проверку, не работает
+                if (!isset($fields[$name]) || $fields[$name] == self::EMPTY_STR && !$this->isRequire($rules)) {
                     continue;
                 }
 

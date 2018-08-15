@@ -10,7 +10,6 @@ abstract class BaseModel
     protected $db;
     protected $table;
     protected $validate;
-    protected $validateRules = [];
 
     public function __construct(DBDriver $db, Validate $validate, $table)
     {
@@ -35,15 +34,12 @@ abstract class BaseModel
     {
         $params = ['id' => $id];
 
-        $this->validate->execute($params);
-
         return $this->db->delete($this->table, $params);
     }
 
     public function create($params)
     {
         $this->validate->execute($params);
-
         $params = $this->validate->getResult();
 
         return $this->db->create($this->table, $params);
@@ -53,7 +49,8 @@ abstract class BaseModel
 
     public function update($params)
     {
-//        $this->validate->execute($params);
+        $this->validate->execute($params);
+        $params = $this->validate->getResult();
 
         return $this->db->update($this->table, $params);
     }

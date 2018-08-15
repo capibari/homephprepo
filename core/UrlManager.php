@@ -22,7 +22,14 @@ class UrlManager
             $action = $array[0];
         } else $action = 'index';
 
-        return sprintf('action%s', ucfirst($action));
+        $actionParts = explode('-', $action);
+        $action = '';
+
+        foreach($actionParts as $part){
+            $action = sprintf('%s%s', $action, ucfirst($part));
+        }
+
+        return sprintf('action%s', $action);
     }
 
     public static function getId()
