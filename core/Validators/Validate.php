@@ -44,9 +44,9 @@ class Validate
     {
 
         if($this->rules){
-            foreach ($this->rules as $name => $rules){
+            foreach ($this->rules as $fieldName => $rules){
 
-                if (!isset($fields[$name]) || $fields[$name] == self::EMPTY_STR && !$this->isRequire($rules)) {
+                if (!isset($fields[$fieldName]) || $fields[$fieldName] == self::EMPTY_STR && !$this->isRequire($rules)) {
                     continue;
                 }
 
@@ -55,57 +55,57 @@ class Validate
 //                    continue;
 //                }
 
-                if (isset($rule[self::NOT_BLANK]) && $this->isBlank( $fields[$name])){
-                    $this->errors[$name][] = sprintf('Поле %s не может быть пустым', $name);
+                if (isset($rule[self::NOT_BLANK]) && $this->isBlank( $fields[$fieldName])){
+                    $this->errors[$fieldName][] = sprintf('Поле %s не может быть пустым', $fieldName);
                 }
 
-                if (isset($rules[self::TYPE]) && !$this->isType($rules[self::TYPE], $fields[$name])){
-                    $this->errors[$name][] = sprintf('Поле %s должно быть %s', $name,  $rules[self::TYPE]);
+                if (isset($rules[self::TYPE]) && !$this->isType($rules[self::TYPE], $fields[$fieldName])){
+                    $this->errors[$fieldName][] = sprintf('Поле %s должно быть %s', $fieldName,  $rules[self::TYPE]);
                 }
 
-                if (isset($rules[self::MIN_LENGTH]) && $this->isMinLength($fields[$name], $rules[self::MIN_LENGTH])){
-                    $this->errors[$name][] = sprintf('Поле %s не должно быть меньше %s символов', $name, $rules[self::MIN_LENGTH]);
+                if (isset($rules[self::MIN_LENGTH]) && $this->isMinLength($fields[$fieldName], $rules[self::MIN_LENGTH])){
+                    $this->errors[$fieldName][] = sprintf('Поле %s не должно быть меньше %s символов', $fieldName, $rules[self::MIN_LENGTH]);
                 }
 
-                if (isset($rules[self::MAX_LENGTH]) && $this->isMaxLength($fields[$name], $rules[self::MAX_LENGTH])) {
-                    $this->errors[$name][] = sprintf('Поле %s не должно превыщать %s символов', $name, $rules[self::MAX_LENGTH]);
+                if (isset($rules[self::MAX_LENGTH]) && $this->isMaxLength($fields[$fieldName], $rules[self::MAX_LENGTH])) {
+                    $this->errors[$fieldName][] = sprintf('Поле %s не должно превыщать %s символов', $fieldName, $rules[self::MAX_LENGTH]);
                 }
 
-                if ((isset($rules[self::SPEC_CHARS]) && $rules[self::SPEC_CHARS]) && !$this->isSpecChars($fields[$name])) {
-                    $this->errors[$name][] = sprintf('Поле %s может содержать только буквы или цифры', $name, $rules[self::MIN_LENGTH]);
+                if ((isset($rules[self::SPEC_CHARS]) && $rules[self::SPEC_CHARS]) && !$this->isSpecChars($fields[$fieldName])) {
+                    $this->errors[$fieldName][] = sprintf('Поле %s может содержать только буквы или цифры', $fieldName, $rules[self::MIN_LENGTH]);
                 }
 
-                if(empty($this->errors[$name])){
-                    if(isset($rules[self::TYPE]) && $rules[self::TYPE] == self::STRING){
-                        $this->result[$name] = Transform::toClearStr($fields[$name]);
-                    } else if (isset($rules[self::TYPE]) && $rules[self::TYPE] == self::INT){
-                        $this->result[$name] = Transform::toInt($fields[$name]);
-                    }
-                    if ($name === self::PASSWORD){
-                        $this->result[$name] = Transform::toHash($fields[$name]);
-                    }
-
+                if(empty($this->errors[$fieldName])){
+                    $this->setResult($rules, $fields, $fieldName);
                 }
 
             }
 
-            $this->checkErrors();
-
-            $this->success = true;
+            $this->isSuccess();
         }
     }
 
-
-
-    private function checkErrors()
+    private function isSuccess()
     {
-        if($this->errors){
-            throw new ValidateException($this->errors);
+        if(!$this->errors){
+            $this->success = true;
         }
 
         return false;
     }
 
+    private function setResult($rules, $fields, $fieldName)
+    {
+
+        if(isset($rules[self::TYPE]) && $rules[self::TYPE] == self::STRING){
+            $this->result[$fieldName] = Transform::toClearStr($fields[$fieldName]);
+        } else if (isset($rules[self::TYPE]) && $rules[self::TYPE] == self::INT){
+            $this->result[$fieldName] = Transform::toInt($fields[$fieldName]);
+        }
+        if ($fieldName === self::PASSWORD){
+            $this->result[$fieldName] = Transform::toHash($fieldName);
+        }
+    }
 
     private function isRequire($rule)
     {
@@ -154,6 +154,10 @@ class Validate
         $this->rules = $rules;
     }
 
+    public function getSuccess()
+    {
+        return $this->success;
+    }
 
     public function getResult()
     {

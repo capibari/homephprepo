@@ -13,6 +13,7 @@ use core\Exception\ValidateException;
 class PassValidate
 {
     public $errors = [];
+    public $success = false;
 
     public function isMatch(array $array)
     {
@@ -22,17 +23,27 @@ class PassValidate
             $this->errors[$name[0]][] = sprintf('Поле %s не совпадает с %s', $name[0], $name[1]);
         }
 
-        $this->checkErrors();
+        $this->isSuccess();
 
         return true;
     }
 
-    private function checkErrors()
+    private function isSuccess()
     {
-        if($this->errors){
-            throw new ValidateException($this->errors);
+        if(!$this->errors){
+            $this->success = true;
         }
 
         return false;
+    }
+
+    public function getSuccess()
+    {
+        return $this->success;
+    }
+
+    public function getErrors()
+    {
+        return $this->errors;
     }
 }

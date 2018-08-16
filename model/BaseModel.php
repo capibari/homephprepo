@@ -3,6 +3,7 @@
 namespace model;
 
 use core\DB\DBDriver;
+use core\Exception\ValidateException;
 use core\Validators\Validate;
 
 abstract class BaseModel
@@ -40,6 +41,11 @@ abstract class BaseModel
     public function create($params)
     {
         $this->validate->execute($params);
+
+        if(!$this->validate->getSuccess()){
+            throw new ValidateException($this->validate->getErrors());
+        }
+
         $params = $this->validate->getResult();
 
         return $this->db->create($this->table, $params);
@@ -50,6 +56,11 @@ abstract class BaseModel
     public function update($params)
     {
         $this->validate->execute($params);
+
+        if(!$this->validate->getSuccess()){
+            throw new ValidateException($this->validate->getErrors());
+        }
+
         $params = $this->validate->getResult();
 
         return $this->db->update($this->table, $params);
