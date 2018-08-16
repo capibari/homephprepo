@@ -3,11 +3,15 @@
 namespace model;
 
 use core\DB\DBDriver;
+use core\Exception\ValidateException;
+use core\Validators\PassValidate;
 use core\Validators\Validate;
 
 
 class UserModel extends BaseModel
 {
+
+    private $passValidate;
 
     private $validateRules = [
         'id' => [
@@ -46,9 +50,25 @@ class UserModel extends BaseModel
         ]
     ];
 
-    public function __construct(DBDriver $db, Validate $validate)
+    public function __construct(DBDriver $db, Validate $validate, PassValidate $passValidate)
     {
         parent::__construct($db, $validate, 'user');
         $this->validate->setRules($this->validateRules);
+        $this->passValidate = $passValidate;
+
+    }
+
+    public function signUp(array $fields)
+    {
+        $this->passValidate->isMatch([
+            'password' => $fields['password'],
+            'confirm' => $fields['confirm'],
+        ]);
+
+        if(!$this->passValidate->getSuccess()){
+            throw new ValidateException($this->passValidate->getErrors());
+        }
+
+        $this->create($fields);
     }
 }

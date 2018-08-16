@@ -8,6 +8,7 @@
 
 namespace controller;
 
+use core\Exception\ValidateException;
 use core\Request;
 use model\UserModel;
 use core\Templater;
@@ -16,16 +17,16 @@ use core\DB\DBDriver;
 use core\Validators\Validate;
 use core\Validators\PassValidate;
 use core\Tools\Transform;
+use core\Auth;
 
 class UserController extends BaseController
 {
-    private $passValidate;
+    private $errors;
 
     public function __construct(Request $request)
     {
         parent::__construct($request);
-
-        $this->passValidate = new PassValidate();
+        $this->errors = null;
     }
 
     public function actionSignUp()
@@ -33,17 +34,27 @@ class UserController extends BaseController
         $this->title =  sprintf('%s | Регистрация', $this->title);
 
         if($this->request->isPost()){
-            $this->actionCreate();
+
+            $mUser = new UserModel(new DBDriver(DBConnector::getPDO()), new Validate(), new PassValidate());
+
+            $auth = new Auth($mUser);
+
+            try{
+                $auth->signUp($this->request->post());
+                $this->redirect("/user");
+            } catch (ValidateException $e){
+                $this->errors = $e->getErrors();
+            }
         }
 
-        $this->render('sign-up', []);
+        $this->render('sign-up', [
+            'errors' => $this->errors,
+        ]);
     }
-
-
 
     public function actionIndex()
     {
-        $mUser = new UserModel(new DBDriver(DBConnector::getPDO()), new Validate());
+        $mUser = new UserModel(new DBDriver(DBConnector::getPDO()), new Validate(), new PassValidate());
         $users = $mUser->getAll();
 
         $this->title = sprintf('%s | Список пользователей', $this->title) ;
@@ -56,37 +67,16 @@ class UserController extends BaseController
     {
         $this->title = sprintf('%s | Добавление нового пользователя', $this->title) ;
 
-        if ($this->request->isPost()) {
+        $this->actionSignUp();
 
-            $mUser = new UserModel(new DBDriver(DBConnector::getPDO()), new Validate());
-
-            $login = $this->request->post('login');
-            $password = $this->request->post('password');
-            $confirm = $this->request->post('confirm');
-            $name = $this->request->post('name');
-
-            $this->passValidate->isMatch([
-                'password' => $password,
-                'confirm' => $confirm,
-            ]);
-
-            $mUser->create([
-                'login' => $login,
-                'password' => $password,
-                'name' => $name,
-            ]);
-
-            $this->redirect("/user");
-        }
-
-        $this->content = Templater::buildHtmlView('user\create', [
-            'login' => null,
+        $this->render('user\create', [
+            'errors' => $this->errors
         ]);
     }
 
     public function actionUpdate()
     {
-        $mUser = new UserModel(new DBDriver(DBConnector::getPDO()), new Validate());
+        $mUser = new UserModel(new DBDriver(DBConnector::getPDO()), new Validate(),  new PassValidate());
         $id = $this->request->get('id');
         $user = $mUser->getById($id);
 
@@ -114,7 +104,7 @@ class UserController extends BaseController
 
     public function actionUpdatePassword()
     {
-        $mUser = new UserModel(new DBDriver(DBConnector::getPDO()), new Validate());
+        $mUser = new UserModel(new DBDriver(DBConnector::getPDO()), new Validate(), new PassValidate());
         $id = $this->request->get('id');
         $user = $mUser->getById($id);
 
@@ -152,7 +142,7 @@ class UserController extends BaseController
 
     public function actionDelete()
     {
-        $mUser = new UserModel(new DBDriver(DBConnector::getPDO()), new Validate());
+        $mUser = new UserModel(new DBDriver(DBConnector::getPDO()), new Validate(), new PassValidate());
         $id = $this->request->get('id');
         $user = $mUser->getById($id);
 
