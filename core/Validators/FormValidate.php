@@ -85,7 +85,7 @@ class FormValidate extends Validate
             $this->result[$fieldName] = $this->toInt($fields[$fieldName]);
         }
         if ($fieldName === self::PASSWORD){
-            $this->result[$fieldName] = $this->toHash($fieldName);
+            $this->result[$fieldName] = $this->toHash($fields[$fieldName]);
         }
     }
 
