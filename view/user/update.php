@@ -1,6 +1,8 @@
-<?php if($msg != ''): ?>
-    <strong style="color:red"><?= $msg?></strong><br>
-<?php endif; ?>
+<?php if($errors):?>
+    <?var_dump($errors) ?>
+    <hr>
+<?php endif;?>
+
 
 <form method="post">
     <input type="text" name="login" value="<?= $login?>">Логин<br><br>

@@ -1,6 +1,8 @@
-<?php if($msg != ''): ?>
-    <strong><?= $msg?></strong><br>
-<?php endif; ?>
+<?php if($errors):?>
+    <?var_dump($errors) ?>
+    <hr>
+<?php endif;?>
+
 
 <form method="post">
     Название<br>

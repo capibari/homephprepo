@@ -1,3 +1,9 @@
+<?php if($errors):?>
+    <?var_dump($errors) ?>
+    <hr>
+<?php endif;?>
+
+
 <form method="post">
     Поля отмеченные звезочкой (*) обязательны к заполнению<br><br>
 

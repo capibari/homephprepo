@@ -2,17 +2,18 @@
 
 namespace controller;
 
+use core\Exception\ValidateException;
 use model\PostModel;
 use core\DB\DBConnector;
 use core\DB\DBDriver;
-use core\Validators\Validate;
+use core\Validators\FormValidate;
 
 
 class PostController extends BaseController
 {
     public function actionIndex()
     {
-        $mPost = new PostModel(new DBDriver(DBConnector::getPDO()), new Validate());
+        $mPost = new PostModel(new DBDriver(DBConnector::getPDO()), new FormValidate());
         $posts = $mPost->getAll();
 
         $this->title = sprintf('%s | Список новостей', $this->title) ;
@@ -23,7 +24,7 @@ class PostController extends BaseController
 
     public function actionPost()
     {
-        $mPost = new PostModel(new DBDriver(DBConnector::getPDO()), new Validate());
+        $mPost = new PostModel(new DBDriver(DBConnector::getPDO()), new FormValidate());
         $id = $this->request->get('id');
         $post = $mPost->getById($id);
 
@@ -39,23 +40,29 @@ class PostController extends BaseController
 
     public function actionUpdate()
     {
-        $mPost = new PostModel(new DBDriver(DBConnector::getPDO()), new Validate());
+        $mPost = new PostModel(new DBDriver(DBConnector::getPDO()), new FormValidate());
         $id = $this->request->get('id');
         $post = $mPost->getById($id);
         $this->title = sprintf('%s | Редактирование %s', $this->title, $post['title']);
 
         if ($this->request->isPost()){
+
             $title = trim($this->request->post('title'));
             $content = trim($this->request->post('content'));
 
-            $mPost->update([
-                'title' => $title,
-                'content' => $content,
-                'date' => time(),
-                'id' => $id
-            ]);
+            try{
+                $mPost->update([
+                    'title' => $title,
+                    'content' => $content,
+                    'date' => time(),
+                    'id' => $id
+                ]);
 
-            $this->redirect("\post", $id);
+                $this->redirect("\post", $id);
+
+            } catch (ValidateException $e){
+                $this->errors = $e->getErrors();
+            }
 
         }
 
@@ -69,7 +76,7 @@ class PostController extends BaseController
 
     public function actionCreate()
     {
-        $mPost = new PostModel(new DBDriver(DBConnector::getPDO()), new Validate());
+        $mPost = new PostModel(new DBDriver(DBConnector::getPDO()), new FormValidate());
 
         $this->title = sprintf('%s | Добавление записи', $this->title);
 
@@ -77,13 +84,18 @@ class PostController extends BaseController
             $title = trim($this->request->post('title'));
             $content = trim($this->request->post('content'));
 
-            $id = $mPost->create([
-                'title' => $title,
-                'content' => $content,
-                'date' => time()
-            ]);
+            try {
+                $id = $mPost->create([
+                    'title' => $title,
+                    'content' => $content,
+                    'date' => time()
+                ]);
 
-            $this->redirect("\post", $id);
+                $this->redirect("\post", $id);
+
+            } catch (ValidateException $e) {
+                $this->errors = $e->getErrors();
+            }
         }
 
         $this->render('post\create', [
@@ -96,7 +108,7 @@ class PostController extends BaseController
     public function actionDelete()
     {
 
-        $mPost = new PostModel(new DBDriver(DBConnector::getPDO()), new Validate());
+        $mPost = new PostModel(new DBDriver(DBConnector::getPDO()), new FormValidate());
         $id = $this->request->get('id');
         $post = $mPost->getById($id);
 

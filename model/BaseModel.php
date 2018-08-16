@@ -4,7 +4,7 @@ namespace model;
 
 use core\DB\DBDriver;
 use core\Exception\ValidateException;
-use core\Validators\Validate;
+use core\Validators\FormValidate;
 
 abstract class BaseModel
 {
@@ -12,7 +12,7 @@ abstract class BaseModel
     protected $table;
     protected $validate;
 
-    public function __construct(DBDriver $db, Validate $validate, $table)
+    public function __construct(DBDriver $db, FormValidate $validate, $table)
     {
         $this->validate = $validate;
         $this->db = $db;

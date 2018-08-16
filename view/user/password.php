@@ -1,6 +1,8 @@
-<?php if($msg != ''): ?>
-    <strong style="color:red"><?= $msg?></strong><br>
-<?php endif; ?>
+<?php if($errors):?>
+    <?var_dump($errors) ?>
+    <hr>
+<?php endif;?>
+
 
 <form method="post">
     <input type="password" name="oldPassword" ">Старый пароль<br><br>

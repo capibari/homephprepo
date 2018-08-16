@@ -1,6 +1,8 @@
-<?php if($msg):?>
-    <h3><?=$msg?></h3>
-<?php endif; ?>
+<?php if($errors):?>
+    <?var_dump($errors) ?>
+    <hr>
+<?php endif;?>
+
 <form method="post">
     Название<br>
     <input type="text" name="title" value="<?= $title?>"><br>

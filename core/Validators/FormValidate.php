@@ -135,8 +135,6 @@ class FormValidate extends Validate
     {
         $this->rules = $rules;
     }
-
-
 }
 
 

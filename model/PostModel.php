@@ -3,7 +3,7 @@
 namespace model;
 
 use core\DB\DBDriver;
-use core\Validators\Validate;
+use core\Validators\FormValidate;
 
 class PostModel extends BaseModel
 {
@@ -33,7 +33,7 @@ class PostModel extends BaseModel
         ]
     ];
 
-    public function __construct(DBDriver $db, Validate $validate)
+    public function __construct(DBDriver $db, FormValidate $validate)
     {
         parent::__construct($db, $validate, 'article');
         $this->validate->setRules($this->validateRules);
