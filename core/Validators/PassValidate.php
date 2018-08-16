@@ -10,11 +10,8 @@ namespace core\Validators;
 use core\Exception\ValidateException;
 
 
-class PassValidate
+class PassValidate extends Validate
 {
-    public $errors = [];
-    public $success = false;
-
     public function isMatch(array $array)
     {
         $name = array_keys($array);
@@ -28,22 +25,4 @@ class PassValidate
         return true;
     }
 
-    private function isSuccess()
-    {
-        if(!$this->errors){
-            $this->success = true;
-        }
-
-        return false;
-    }
-
-    public function getSuccess()
-    {
-        return $this->success;
-    }
-
-    public function getErrors()
-    {
-        return $this->errors;
-    }
 }
